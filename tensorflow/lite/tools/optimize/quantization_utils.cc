@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 #include "tensorflow/lite/tools/optimize/quantization_utils.h"
 
+#include <iostream>
 #include <cmath>
 #include <cstdint>
 #include <memory>
@@ -102,10 +103,14 @@ TfLiteStatus GetQuantizationParams(TensorT* tensor, TensorType activations_type,
                                    QuantizationParametersT* quantization_params,
                                    ErrorReporter* error_reporter) {
   if (activations_type == TensorType_INT8) {
-    GetAsymmetricQuantizationParams(
-        tensor->quantization->min[0], tensor->quantization->max[0],
-        std::numeric_limits<int8_t>::min(), std::numeric_limits<int8_t>::max(),
-        quantization_params);
+    // GetAsymmetricQuantizationParams(
+    //     tensor->quantization->min[0], tensor->quantization->max[0],
+    //     std::numeric_limits<int8_t>::min(), std::numeric_limits<int8_t>::max(),
+    //     quantization_params);
+    const int half_quantized_range = 127;
+    GetSymmetricQuantizationParams(tensor->quantization->min[0],
+                                   tensor->quantization->max[0],
+                                   half_quantized_range, quantization_params);
   } else if (activations_type == TensorType_INT16) {
     const int half_quantized_range = 32767;
     GetSymmetricQuantizationParams(tensor->quantization->min[0],
